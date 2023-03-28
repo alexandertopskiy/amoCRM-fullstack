@@ -2,6 +2,9 @@
 dist
 node_modules
 
+# private data
+.env
+
 # Logs
 logs
 *.log
