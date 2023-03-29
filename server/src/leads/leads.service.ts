@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import axios from 'axios';
 import { Injectable } from '@nestjs/common';
 import ICredentialsData from 'src/types/ICredentialsData';
+import ILead from 'src/types/ILead';
 import IResponsibleUser from 'src/types/IResponsibleUser';
 import IContact from 'src/types/IContact';
 import IStatus from 'src/types/IStatus';
@@ -130,19 +131,33 @@ export class LeadsService {
 
     async getLeads(query: string) {
         try {
-            const res = 'get all leads with query: ' + query;
-            console.log(res);
+            console.log('Get All Leads with Query: ' + query);
 
             const leadsArray = await this.makeAmoGetRequest('leads', `?query=${query}&with=contacts`);
-            console.log('\nSUCCESS:', leadsArray.length, 'сделок');
+            console.log('Success. Найдено сделок:', leadsArray.length);
 
-            // получение всех ответственных пользователей
             const allResponsibles = await this.getResponsibleUsers();
-            // получение всех статусов
             const allStatuses = await this.getAllStatuses();
-            // получение всех контактов
             const allContacts = await this.getAllContacts();
-            return res;
+
+            const normalizedLeads: ILead[] = [];
+            leadsArray.forEach(lead => {
+                const leadContacts = lead._embedded.contacts.map(contact => allContacts.find(c => contact.id === c.id));
+                const leadStatus = allStatuses.find(status => status.id === lead.status_id);
+                const leadResponsible = allResponsibles.find(user => user.id === lead.responsible_user_id);
+
+                normalizedLeads.push({
+                    id: lead.id,
+                    name: lead.name,
+                    price: lead.price,
+                    responsible_user: leadResponsible,
+                    status: leadStatus,
+                    created_at: lead.created_at,
+                    contacts: leadContacts
+                });
+            });
+
+            return normalizedLeads;
         } catch (error) {
             const code = error.response?.status;
             // 401 - Unauthorized
