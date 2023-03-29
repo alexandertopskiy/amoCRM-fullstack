@@ -1,7 +1,8 @@
 import * as fs from 'fs';
 import axios from 'axios';
 import { Injectable } from '@nestjs/common';
-import ICredentialsData from '../types/ICredentialsData';
+import ICredentialsData from 'src/types/ICredentialsData';
+import IResponsibleUser from 'src/types/IResponsibleUser';
 import IContact from 'src/types/IContact';
 
 @Injectable()
@@ -67,6 +68,23 @@ export class LeadsService {
         return response.data._embedded[endpoint];
     }
 
+    private async getResponsibleUsers(): Promise<IResponsibleUser[]> {
+        try {
+            const responseData = await this.makeAmoGetRequest('users');
+            const normalizedUsers: IResponsibleUser[] = [];
+            responseData.forEach(el =>
+                normalizedUsers.push({
+                    id: el.id,
+                    name: el.name,
+                    email: el.email
+                })
+            );
+            return normalizedUsers;
+        } catch (error) {
+            console.log('getResponsibleUsers error: ' + error);
+        }
+    }
+
     private async getAllContacts(): Promise<IContact[]> {
         try {
             const responseData = await this.makeAmoGetRequest('contacts');
@@ -96,6 +114,8 @@ export class LeadsService {
             const leadsArray = await this.makeAmoGetRequest('leads', '?with=contacts');
             console.log('\nSUCCESS:', leadsArray.length, 'сделок');
 
+            // получение всех ответственных пользователей
+            const allResponsibles = await this.getResponsibleUsers();
             // получение всех контактов
             const allContacts = await this.getAllContacts();
             console.log(allContacts);
