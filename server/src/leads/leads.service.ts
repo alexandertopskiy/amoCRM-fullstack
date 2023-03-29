@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import axios from 'axios';
 import { Injectable } from '@nestjs/common';
 import ICredentialsData from '../types/ICredentialsData';
+import IContact from 'src/types/IContact';
 
 @Injectable()
 export class LeadsService {
@@ -56,15 +57,48 @@ export class LeadsService {
         return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
     }
 
+    // helper-функция для запроса к amoCRM
+    private async makeAmoGetRequest(endpoint: string, params: string = '') {
+        const url = `https://${process.env.SUBDOMAIN}.amocrm.ru/api/v4/${endpoint}${params}`;
+        const accessToken = this.getCredentialsData()?.access_token;
+        const response = await axios.get(url, {
+            headers: { 'Authorization': 'Bearer ' + accessToken }
+        });
+        return response.data._embedded[endpoint];
+    }
+
+    private async getAllContacts(): Promise<IContact[]> {
+        try {
+            const responseData = await this.makeAmoGetRequest('contacts');
+            const normalizedContacts: IContact[] = [];
+            responseData.forEach(el => {
+                const email = el.custom_fields_values?.find(field => field.field_code === 'EMAIL');
+                const phone = el.custom_fields_values?.find(field => field.field_code === 'PHONE');
+
+                normalizedContacts.push({
+                    id: el.id,
+                    name: el.name,
+                    email: email?.values[0].value,
+                    phone: phone?.values[0].value
+                });
+            });
+            return normalizedContacts;
+        } catch (error) {
+            console.log('getContacts error: ' + error);
+        }
+    }
+
     async getLeads(query: string) {
         try {
             const res = 'get all leads with query: ' + query;
             console.log(res);
 
-            const url = `https://${process.env.SUBDOMAIN}.amocrm.ru/api/v4/leads`;
-            const response = await axios.get(url);
-            console.log('\nSUCCESS: ' + response + '\n\n\n');
+            const leadsArray = await this.makeAmoGetRequest('leads', '?with=contacts');
+            console.log('\nSUCCESS:', leadsArray.length, 'сделок');
 
+            // получение всех контактов
+            const allContacts = await this.getAllContacts();
+            console.log(allContacts);
             return res;
         } catch (error) {
             const code = error.response?.status;
