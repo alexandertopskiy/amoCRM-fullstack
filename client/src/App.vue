@@ -1,26 +1,17 @@
 <template>
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App" />
+    <a-layout style="height: 100%">
+        <a-layout-content style="padding: 0 50px; height: 100%">
+            <HelloWorld msg="Welcome to Your Vue.js + TypeScript App" />
+        </a-layout-content>
+    </a-layout>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
+<script setup lang="ts">
 import HelloWorld from './components/HelloWorld.vue';
-
-export default defineComponent({
-    name: 'App',
-    components: {
-        HelloWorld
-    }
-});
 </script>
 
 <style lang="scss">
 #app {
-    font-family: Avenir, Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-align: center;
-    color: #2c3e50;
-    margin-top: 60px;
+    height: 100%;
 }
 </style>
