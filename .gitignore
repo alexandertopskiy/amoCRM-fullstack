@@ -4,6 +4,7 @@ node_modules
 
 # private data
 .env
+.credentials.json
 
 # Logs
 logs
