@@ -1,13 +1,14 @@
 <template>
     <a-card title="Список всех сделок" :bordered="false">
         <template #extra>
-            <input type="text" placeholder="Поиск сделок" />
+            <SearchBar />
         </template>
         <a-table :dataSource="dataSource" :columns="columns" :pagination="false" />
     </a-card>
 </template>
 
 <script setup lang="ts">
+import SearchBar from './SearchBar.vue';
 const dataSource = [
     {
         'id': 1804003,
