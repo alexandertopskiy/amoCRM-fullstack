@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common';
 import ICredentialsData from 'src/types/ICredentialsData';
 import IResponsibleUser from 'src/types/IResponsibleUser';
 import IContact from 'src/types/IContact';
+import IStatus from 'src/types/IStatus';
 
 @Injectable()
 export class LeadsService {
@@ -59,13 +60,13 @@ export class LeadsService {
     }
 
     // helper-функция для запроса к amoCRM
-    private async makeAmoGetRequest(endpoint: string, params: string = '') {
+    private async makeAmoGetRequest(endpoint: string, params: string = '', destruct = true) {
         const url = `https://${process.env.SUBDOMAIN}.amocrm.ru/api/v4/${endpoint}${params}`;
         const accessToken = this.getCredentialsData()?.access_token;
         const response = await axios.get(url, {
             headers: { 'Authorization': 'Bearer ' + accessToken }
         });
-        return response.data._embedded[endpoint];
+        return destruct ? response.data._embedded[endpoint] : response.data._embedded;
     }
 
     private async getResponsibleUsers(): Promise<IResponsibleUser[]> {
@@ -82,6 +83,27 @@ export class LeadsService {
             return normalizedUsers;
         } catch (error) {
             console.log('getResponsibleUsers error: ' + error);
+        }
+    }
+
+    private async getAllStatuses() {
+        try {
+            const { pipelines } = await this.makeAmoGetRequest('leads/pipelines', '', false);
+            const normalizedStatuses: IStatus[] = [];
+
+            pipelines.forEach(pipeline => {
+                pipeline._embedded.statuses.forEach(status => {
+                    normalizedStatuses.push({
+                        id: status.id,
+                        name: status.name,
+                        color: status.color
+                    });
+                });
+            });
+
+            return normalizedStatuses;
+        } catch (error) {
+            console.log('getAllStatuses error: ' + error);
         }
     }
 
@@ -111,14 +133,15 @@ export class LeadsService {
             const res = 'get all leads with query: ' + query;
             console.log(res);
 
-            const leadsArray = await this.makeAmoGetRequest('leads', '?with=contacts');
+            const leadsArray = await this.makeAmoGetRequest('leads', `?query=${query}&with=contacts`);
             console.log('\nSUCCESS:', leadsArray.length, 'сделок');
 
             // получение всех ответственных пользователей
             const allResponsibles = await this.getResponsibleUsers();
+            // получение всех статусов
+            const allStatuses = await this.getAllStatuses();
             // получение всех контактов
             const allContacts = await this.getAllContacts();
-            console.log(allContacts);
             return res;
         } catch (error) {
             const code = error.response?.status;
