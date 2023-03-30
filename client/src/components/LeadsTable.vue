@@ -1,9 +1,25 @@
 <template>
     <a-card title="Список всех сделок" :bordered="false">
         <template #extra>
-            <SearchBar />
+            <SearchBar :isLoading="isLoading" :searchedTerm="searchTerm" @search="updateSearch" />
         </template>
-        <a-table :dataSource="dataSource" :columns="columns" :pagination="false" rowKey="id" bordered>
+        <a-table
+            :dataSource="dataSource"
+            rowKey="id"
+            :columns="columns"
+            :pagination="false"
+            bordered
+            :loading="isLoading"
+            :scroll="{ x: true }"
+        >
+            <!-- Сообщение, если ничего не найдено -->
+            <template #emptyText>
+                <a-empty>
+                    <template #description>
+                        <p>Ни одной сделки не найдено</p>
+                    </template>
+                </a-empty>
+            </template>
 
             <!-- Основная информация -->
             <template #bodyCell="{ column, record, index }">
@@ -60,6 +76,14 @@ const store = useStore();
 moment.locale('ru');
 
 const searchTerm = ref('');
+const isTermValid = computed(() => !searchTerm.value.length || searchTerm.value.length > 2);
+const updateSearch = (newQuery: string) => (searchTerm.value = newQuery);
+// задержка поиска, чтобы не делать лишних запросов, а подождать 0.3с после ввода
+watch(searchTerm, function (newValue) {
+    setTimeout(() => {
+        if (newValue === searchTerm.value && isTermValid.value) fetchLeads();
+    }, 300);
+});
 
 const errorMessage = ref(false);
 const handleError = () => (errorMessage.value = false);
