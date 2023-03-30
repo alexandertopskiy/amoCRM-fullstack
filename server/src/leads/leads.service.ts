@@ -129,7 +129,7 @@ export class LeadsService {
         }
     }
 
-    async getLeads(query: string) {
+    async getLeads(query: string): Promise<ILead[]> {
         try {
             console.log('Get All Leads with Query: ' + query);
 
