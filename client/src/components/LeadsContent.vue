@@ -14,11 +14,22 @@
                         {{ record.responsible_user.name }}
                     </div>
                 </template>
+
                 <!-- Статус -->
                 <template v-if="column.key === 'status'">
                     <a-tag :color="record.status.color" style="color: rgba(0, 0, 0, 0.65)">{{
                         record.status.name
                     }}</a-tag>
+                </template>
+
+                <!-- Дата -->
+                <template v-if="column.key === 'created_at'">
+                    <p>{{ moment(record.created_at).format('D MMMM YYYY') }}</p>
+                </template>
+
+                <!-- Бюджет -->
+                <template v-if="column.key === 'price'">
+                    <p>{{ record.price }} ₽</p>
                 </template>
             </template>
         </a-table>
@@ -26,8 +37,11 @@
 </template>
 
 <script setup lang="ts">
+import moment from 'moment';
 import { UserOutlined } from '@ant-design/icons-vue';
 import SearchBar from './SearchBar.vue';
+
+moment.locale('ru');
 
 const dataSource = [
     {

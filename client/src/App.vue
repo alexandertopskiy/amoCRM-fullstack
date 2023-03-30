@@ -21,4 +21,8 @@ import LeadsContent from './components/LeadsContent.vue';
     padding: 50px;
     height: 100%;
 }
+
+p {
+    margin: 0;
+}
 </style>
