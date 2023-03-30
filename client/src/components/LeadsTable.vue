@@ -42,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useStore } from 'vuex';
 import moment from 'moment';
 // components
@@ -53,8 +53,20 @@ import UserCard from '@/components/ui/UserCard.vue';
 const store = useStore();
 moment.locale('ru');
 
-const dataSource = computed(() => store.getters.leads);
+const searchTerm = ref('');
 
+const isLoading = ref(false);
+const fetchLeads = async function () {
+    isLoading.value = true;
+    try {
+        await store.dispatch('getLeads', { searchQuery: searchTerm.value });
+    } catch (_) {
+    }
+    isLoading.value = false;
+};
+fetchLeads();
+
+const dataSource = computed(() => store.getters.leads);
 const columns = [
     { title: '#', key: 'index' },
     { title: 'Название', dataIndex: 'name', key: 'name' },
