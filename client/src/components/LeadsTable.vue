@@ -4,6 +4,8 @@
             <SearchBar />
         </template>
         <a-table :dataSource="dataSource" :columns="columns" :pagination="false" rowKey="id" bordered>
+
+            <!-- Основная информация -->
             <template #bodyCell="{ column, record, index }">
                 <!-- Номер -->
                 <template v-if="column.key === 'index'">
@@ -38,6 +40,10 @@
                 <LeadContacts :contacts="record.contacts" />
             </template>
         </a-table>
+        <a-modal :visible="!!errorMessage" :footer="null" @cancel="handleError">
+            <h2>Произошла ошибка</h2>
+            <p>Что-то пошло не так. Пожалуйста, повторите ошибку позже</p>
+        </a-modal>
     </a-card>
 </template>
 
@@ -55,12 +61,16 @@ moment.locale('ru');
 
 const searchTerm = ref('');
 
+const errorMessage = ref(false);
+const handleError = () => (errorMessage.value = false);
+
 const isLoading = ref(false);
 const fetchLeads = async function () {
     isLoading.value = true;
     try {
         await store.dispatch('getLeads', { searchQuery: searchTerm.value });
     } catch (_) {
+        errorMessage.value = true;
     }
     isLoading.value = false;
 };
