@@ -3,16 +3,16 @@
         <template #extra>
             <SearchBar />
         </template>
-        <a-table :dataSource="dataSource" :columns="columns" :pagination="false" rowKey="id">
-            <template #bodyCell="{ column, record }">
+        <a-table :dataSource="dataSource" :columns="columns" :pagination="false" rowKey="id" bordered>
+            <template #bodyCell="{ column, record, index }">
+                <!-- Номер -->
+                <template v-if="column.key === 'index'">
+                    {{ index + 1 }}
+                </template>
+
                 <!-- Ответственный -->
                 <template v-if="column.key === 'responsible_user'">
-                    <div class="res-user">
-                        <a-avatar class="res-user-icon" size="small">
-                            <template #icon><UserOutlined /></template>
-                        </a-avatar>
-                        {{ record.responsible_user.name }}
-                    </div>
+                    <UserCard :user="record.responsible_user" />
                 </template>
 
                 <!-- Статус -->
@@ -40,8 +40,9 @@
 import { computed } from 'vue';
 import { useStore } from 'vuex';
 import moment from 'moment';
-import { UserOutlined } from '@ant-design/icons-vue';
-import SearchBar from './SearchBar.vue';
+// components
+import SearchBar from '@/components/ui/SearchBar.vue';
+import UserCard from '@/components/ui/UserCard.vue';
 
 const store = useStore();
 moment.locale('ru');
@@ -50,40 +51,31 @@ const dataSource = computed(() => store.getters.leads);
 
 const columns = [
     {
+        title: '#',
+        key: 'index'
+    },
+    {
         title: 'Название',
         dataIndex: 'name',
         key: 'name'
     },
     {
+        title: 'Бюджет (руб)',
+        dataIndex: 'price',
+        key: 'price'
+    },
+    {
         title: 'Статус',
-        dataIndex: ['status', 'name'],
         key: 'status'
     },
     {
         title: 'Ответственный',
-        dataIndex: ['responsible_user', 'name'],
         key: 'responsible_user'
     },
     {
         title: 'Дата создания',
         dataIndex: 'created_at',
         key: 'created_at'
-    },
-    {
-        title: 'Бюджет (руб)',
-        dataIndex: 'price',
-        key: 'price'
     }
 ];
 </script>
-
-<style scoped lang="scss">
-.res-user {
-    display: flex;
-    align-items: center;
-
-    &-icon {
-        margin-right: 5px;
-    }
-}
-</style>
