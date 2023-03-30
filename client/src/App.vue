@@ -1,6 +1,6 @@
 <template>
     <a-layout class="layout">
-        <a-layout-content class="layout-content">
+        <a-layout-content class="layout__content">
             <LeadsTable />
         </a-layout-content>
     </a-layout>
@@ -14,12 +14,14 @@ import LeadsTable from '@/components/LeadsTable.vue';
 #app {
     height: 100%;
 }
+
 .layout {
     height: 100%;
-}
-.layout-content {
-    padding: 50px;
-    height: 100%;
+
+    &__content {
+        padding: 50px;
+        height: 100%;
+    }
 }
 
 p {

@@ -1,11 +1,8 @@
 <template>
-    <p v-if="contacts.length === 0" style="text-align: center">Нет Контактов, связанных со сделкой</p>
+    <h4 v-if="contacts.length === 0" style="text-align: center">Нет Контактов, связанных со сделкой</h4>
     <template v-else>
-        <a-table :dataSource="contacts" :columns="columns" :pagination="false" rowKey="id">
-            <!-- :locale="{ emptyText: 'Нет данных' }" -->
-            <template #title>
-                <h4 style="text-align: center">Все контакты, связанные со сделкой</h4>
-            </template>
+        <h4 style="text-align: center">Контакты, связанные со сделкой:</h4>
+        <a-table :dataSource="contacts" :columns="columns" :pagination="false" rowKey="id" bordered>
             <template #bodyCell="{ column, record, index }">
                 <template v-if="column.key === 'index'">
                     {{ index + 1 }}
