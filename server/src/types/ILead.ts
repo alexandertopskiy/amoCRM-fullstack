@@ -8,6 +8,6 @@ export default interface ILead {
     price: number; // Бюджет сделки
     responsible_user: IResponsibleUser; // Ответственный за сделку
     status: IStatus; // Статус сделки
-    created_at: number; // Дата создания сделки (в мс)
+    created_at: string; // Дата создания сделки (ISO Date)
     contacts: IContact[]; // Связанные контакты
 }

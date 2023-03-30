@@ -152,7 +152,7 @@ export class LeadsService {
                     price: lead.price,
                     responsible_user: leadResponsible,
                     status: leadStatus,
-                    created_at: lead.created_at,
+                    created_at: new Date(lead.created_at * 1000).toISOString(),
                     contacts: leadContacts
                 });
             });
