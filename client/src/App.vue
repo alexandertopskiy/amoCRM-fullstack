@@ -1,13 +1,13 @@
 <template>
     <a-layout class="layout">
         <a-layout-content class="layout-content">
-            <LeadsContent />
+            <LeadsTable />
         </a-layout-content>
     </a-layout>
 </template>
 
 <script setup lang="ts">
-import LeadsContent from './components/LeadsContent.vue';
+import LeadsTable from '@/components/LeadsTable.vue';
 </script>
 
 <style lang="scss">

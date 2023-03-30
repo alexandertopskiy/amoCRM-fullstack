@@ -22,15 +22,20 @@
                     }}</a-tag>
                 </template>
 
-                <!-- Дата -->
-                <template v-if="column.key === 'created_at'">
-                    <p>{{ moment(record.created_at).format('D MMMM YYYY') }}</p>
-                </template>
-
                 <!-- Бюджет -->
                 <template v-if="column.key === 'price'">
                     <p>{{ record.price }} ₽</p>
                 </template>
+
+                <!-- Дата -->
+                <template v-if="column.key === 'created_at'">
+                    <p>{{ moment(record.created_at).format('D MMMM YYYY') }}</p>
+                </template>
+            </template>
+
+            <!-- Выпадающий список с контактами -->
+            <template #expandedRowRender="{ record }">
+                <LeadContacts :contacts="record.contacts" />
             </template>
         </a-table>
     </a-card>
@@ -41,6 +46,7 @@ import { computed } from 'vue';
 import { useStore } from 'vuex';
 import moment from 'moment';
 // components
+import LeadContacts from '@/components/LeadContacts.vue';
 import SearchBar from '@/components/ui/SearchBar.vue';
 import UserCard from '@/components/ui/UserCard.vue';
 
@@ -50,32 +56,11 @@ moment.locale('ru');
 const dataSource = computed(() => store.getters.leads);
 
 const columns = [
-    {
-        title: '#',
-        key: 'index'
-    },
-    {
-        title: 'Название',
-        dataIndex: 'name',
-        key: 'name'
-    },
-    {
-        title: 'Бюджет (руб)',
-        dataIndex: 'price',
-        key: 'price'
-    },
-    {
-        title: 'Статус',
-        key: 'status'
-    },
-    {
-        title: 'Ответственный',
-        key: 'responsible_user'
-    },
-    {
-        title: 'Дата создания',
-        dataIndex: 'created_at',
-        key: 'created_at'
-    }
+    { title: '#', key: 'index' },
+    { title: 'Название', dataIndex: 'name', key: 'name' },
+    { title: 'Бюджет (руб)', dataIndex: 'price', key: 'price' },
+    { title: 'Статус', key: 'status' },
+    { title: 'Ответственный', key: 'responsible_user' },
+    { title: 'Дата создания', dataIndex: 'created_at', key: 'created_at' }
 ];
 </script>
