@@ -1,14 +1,15 @@
-import * as dotenv from 'dotenv';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 
-// загрузка содержимого .env в process.env
-dotenv.config();
+async function start() {
+    const PORT = process.env.PORT || 3000; // указыаем порт, на котором будет работать приложение
+    const app = await NestFactory.create(AppModule); // // создаем экземпляр приложения
 
-async function bootstrap() {
-    const app = await NestFactory.create(AppModule);
-    app.setGlobalPrefix('api');
+    app.setGlobalPrefix('api'); // устанавливаем глобальный префикс для обращения к серверу (http://localhost::3000/api)
     app.enableCors();
-    await app.listen(3000);
+
+    await app.listen(PORT, () => console.log('Server started on port ' + PORT)); // запускаем приложение
 }
-bootstrap();
+
+// запуск приложения
+start();
