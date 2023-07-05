@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import ILead from 'src/types/ILead';
 import { AuthService } from 'src/auth/auth.service';
 import { AmoService } from 'src/amo/amo.service';
@@ -55,16 +55,23 @@ export class LeadsService {
             return normalizedLeads;
         } catch (error) {
             const code = error.response?.status;
+
             // 401 - Unauthorized
             if (code === 401) {
                 console.log('Unauthorized. Try to Auth');
+                // попытка авторизоваться в интеграции amoCRM (используя данные из .credentials.json с их последующей перезаписью)
                 const result = await this.authService.authenticate();
-                if (!result) throw new Error('Auth Error');
+                if (!result)
+                    throw new HttpException(
+                        'Ошибка при авторизации в системе amoCRM. Повторите попытку позже',
+                        HttpStatus.UNAUTHORIZED
+                    );
 
+                // повторный вызов запроса
                 return this.getLeads(query);
             }
 
-            return [];
+            throw new HttpException('Не удалось найти сделки', HttpStatus.NOT_FOUND);
         }
     }
 }

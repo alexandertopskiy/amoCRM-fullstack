@@ -17,6 +17,7 @@ export class FilesService {
         if (!(await fileExists(filePath))) return null;
 
         const stringData = await fs.readFile(filePath, 'utf-8');
+
         if (stringData.length === 0) return null;
 
         return stringData;
@@ -30,11 +31,10 @@ export class FilesService {
      * @returns {Promise<ICredentialsData>} данные аутентификации
      */
     async getCredentialsData(): Promise<ICredentialsData> {
-        console.log('getCredentialsData call');
-        // chech empty/non-valid file
         const rawData = await this.getLocalData('.credentials.json');
+        const jsonData = JSON.parse(rawData);
 
-        return JSON.parse(rawData);
+        return jsonData;
     }
 
     /**

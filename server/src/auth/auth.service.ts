@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { FilesService } from 'src/files/files.service';
 
@@ -37,7 +37,7 @@ export class AuthService {
                 integrationData['code'] = process.env.AUTH_CODE;
             }
 
-            // отправляем запрос авторизации
+            // отправляем запрос на авторизацию в интеграции amoCRM
             const response = await axios.post(url, integrationData);
 
             // запись ответа (токенов) в json-файл
@@ -48,6 +48,17 @@ export class AuthService {
             const code = error.response?.status;
             const message = error.response?.data?.hint;
             console.log('auth error #' + code + ': ' + message);
+
+            if (code < 200 || code > 204) {
+                throw new HttpException(
+                    {
+                        message:
+                            'Произошла ошибка при авторизации в системе amoCRM. Проверьте данные в .credentials.json',
+                        description: message
+                    },
+                    HttpStatus.UNAUTHORIZED
+                );
+            }
 
             return false;
         }

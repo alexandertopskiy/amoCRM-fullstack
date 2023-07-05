@@ -10,12 +10,16 @@ export class AmoService {
     /**
      * Helper-функция для выполнения GET-запроса к amoCRM для получения данных
      *
-     * @param endpoint - интересующий эндпоинт
-     * @param params - параметры
-     * @param destruct -
-     * @returns {Promise<any>}
+     * @param {string} endpoint - интересующий эндпоинт
+     * @param {string} params - параметры
+     * @param {boolean} destruct - нужно ли доставать данные из **_embedded[endpoint]** или брать само свойство **_embedded** (по дефолту - первое)
+	 * * для эндпоинтов "leads"/"users"/"contacts" данные лежат в свойстве ответа _embedded[endpoint] (например, для сделок - в _embedded.leads)
+	 * * но для статусов сделок эндпоинт - "leads/pipelines", а данные лежат в _embedded.statuses
+	 * * т.о. по дефолту данные будут браться из _embedded[endpoint], но для статусов будет возвращаться свойство _embedded, и обрабатываться уже в сервисе статусов 
+
+     * @returns {Promise<any>} данные запрашиваемых сущностей (например, массив сделок)
      */
-    async makeAmoGetRequest(endpoint: string, params: string = '', destruct = true): Promise<any> {
+    async makeAmoGetRequest(endpoint: string, params: string = '', destruct: boolean = true): Promise<any> {
         const url = `https://${process.env.SUBDOMAIN}.amocrm.ru/api/v4/${endpoint}${params}`;
 
         // получаем accessToken из локального JSON-файла
