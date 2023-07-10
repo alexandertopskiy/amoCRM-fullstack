@@ -71,7 +71,7 @@ export class LeadsService {
                 return this.getLeads(query);
             }
 
-            throw new HttpException('Не удалось найти сделки', HttpStatus.NOT_FOUND);
+            return [];
         }
     }
 }
