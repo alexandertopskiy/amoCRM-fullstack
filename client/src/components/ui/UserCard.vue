@@ -1,16 +1,31 @@
 <template>
-    <div class="res-user">
-        <a-avatar class="res-user-icon" size="small">
-            <template #icon><UserOutlined /></template>
-        </a-avatar>
-        {{ user.name }}
-        <a v-if="user.phone" :href="phoneLink">
-            <PhoneTwoTone />
-        </a>
-        <a v-if="user.email" :href="emailLink">
-            <MailOutlined />
-        </a>
-    </div>
+    <a-row align="middle" :gutter="8">
+        <!-- Аватар -->
+        <a-col>
+            <a-avatar size="small">
+                <template #icon><UserOutlined /></template>
+            </a-avatar>
+        </a-col>
+
+        <!-- Имя -->
+        <a-col>
+            {{ user.name }}
+        </a-col>
+
+        <!-- Звонок по номеру телефона (ссылка) -->
+        <a-col>
+            <a v-if="user.phone" :href="phoneLink">
+                <PhoneTwoTone />
+            </a>
+        </a-col>
+
+        <!-- Написать письмо на эл.почту (ссылка) -->
+        <a-col>
+            <a v-if="user.email" :href="emailLink">
+                <MailOutlined />
+            </a>
+        </a-col>
+    </a-row>
 </template>
 
 <script setup lang="ts">
@@ -23,11 +38,3 @@ const props = defineProps<{ user: IUser }>();
 const phoneLink = computed(() => 'tel:' + props.user.phone);
 const emailLink = computed(() => 'mailto:' + props.user.email);
 </script>
-
-<style scoped lang="scss">
-.res-user {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-</style>

@@ -1,20 +1,27 @@
 <template>
-    <div class="input-container">
-        <div v-if="!isInputValid">
-            <a-tooltip title="Поиск работает от 3 символов">
-                <warning-outlined class="warn-icon" />
-            </a-tooltip>
-        </div>
-        <a-input-search
-            placeholder="Поиск сделок"
-            :loading="isLoading"
-            :visibilityToggle="false"
-            style="width: 300px"
-            :value="searchedTerm"
-            @change="search"
-            allow-clear
-        />
-    </div>
+    <a-row align="middle" :gutter="10">
+        <!-- Сообщение о минимальном числе символов для поиска -->
+        <a-col>
+            <div v-if="!isInputValid">
+                <a-tooltip title="Поиск работает от 3 символов">
+                    <warning-outlined :style="{ fontSize: '1rem', color: '#fa8c16' }" />
+                </a-tooltip>
+            </div>
+        </a-col>
+
+        <!-- Search bar -->
+        <a-col>
+            <a-input-search
+                placeholder="Поиск сделок"
+                :loading="isLoading"
+                :visibilityToggle="false"
+                style="width: 300px"
+                :value="searchedTerm"
+                @change="search"
+                allow-clear
+            />
+        </a-col>
+    </a-row>
 </template>
 
 <script setup lang="ts">
@@ -36,15 +43,3 @@ const search = function (event: Event): void {
     emit('search', newTerm);
 };
 </script>
-
-<style scoped>
-.input-container {
-    display: flex;
-    align-items: center;
-}
-.warn-icon {
-    color: #fa8c16;
-    font-size: 1rem;
-    margin-right: 10px;
-}
-</style>

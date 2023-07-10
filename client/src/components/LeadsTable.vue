@@ -1,9 +1,11 @@
 <template>
     <a-card title="Список всех сделок" :bordered="false">
+        <!-- SearchBar -->
         <template #extra>
             <SearchBar :isLoading="isLoading" :searchedTerm="searchTerm" @search="updateSearch" />
         </template>
 
+        <!-- Данные таблицы -->
         <a-table
             :dataSource="dataSource"
             rowKey="id"
